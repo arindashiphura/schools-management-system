@@ -1,4 +1,5 @@
 const Student = require('../models/Student');
+const Parent = require('../models/Parent');
 const path = require('path');
 const fs = require('fs');
 
@@ -46,6 +47,41 @@ exports.createStudent = async (req, res) => {
     });
 
     await newStudent.save();
+
+    // Save father as parent
+    if (fatherName && phoneNumber) {
+      const parentId = `F${Date.now()}`;
+      const existingParent = await Parent.findOne({ parentId, name: fatherName });
+      if (!existingParent) {
+        await Parent.create({
+          parentId,
+          name: fatherName,
+          gender: 'Male',
+          occupation: fatherOccupation,
+          address: presentAddress,
+          mobile: phoneNumber,
+          email,
+          photo: parentsPhotoPath || 'https://ui-avatars.com/api/?name=Parent&background=random',
+        });
+      }
+    }
+    // Save mother as parent
+    if (motherName && phoneNumber) {
+      const parentId = `M${Date.now()}`;
+      const existingParent = await Parent.findOne({ parentId, name: motherName });
+      if (!existingParent) {
+        await Parent.create({
+          parentId,
+          name: motherName,
+          gender: 'Female',
+          occupation: motherOccupation,
+          address: presentAddress,
+          mobile: phoneNumber,
+          email,
+          photo: parentsPhotoPath || 'https://ui-avatars.com/api/?name=Parent&background=random',
+        });
+      }
+    }
 
     res.status(201).json({ success: true, message: 'Student added successfully!', student: newStudent });
   } catch (error) {
