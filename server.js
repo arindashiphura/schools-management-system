@@ -11,6 +11,7 @@ const parentRoutes = require('./routes/parentRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
 const bookRoutes = require('./routes/bookRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
+const subjectRoutes = require('./routes/subjectRoutes');
 
 
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/v1/parents", parentRoutes);
 app.use("/api/v1/teachers", teacherRoutes);
 app.use("/api/v1/books", bookRoutes);
 app.use("/api/v1/expenses", expenseRoutes);
+app.use("/api/v1/subjects", subjectRoutes);
 
 
 // Serve upload folder
