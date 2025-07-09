@@ -31,4 +31,39 @@ exports.getAllBooks = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
+};
+
+// Update a book by ID
+exports.updateBook = async (req, res) => {
+  try {
+    const bookId = req.params.id;
+    const updateData = { ...req.body };
+    // Remove undefined or empty string fields
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined || updateData[key] === '') {
+        delete updateData[key];
+      }
+    });
+    const updatedBook = await Book.findByIdAndUpdate(bookId, updateData, { new: true });
+    if (!updatedBook) {
+      return res.status(404).json({ message: 'Book not found.' });
+    }
+    res.status(200).json({ message: 'Book updated successfully', book: updatedBook });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Delete a book by ID
+exports.deleteBook = async (req, res) => {
+  try {
+    const bookId = req.params.id;
+    const deletedBook = await Book.findByIdAndDelete(bookId);
+    if (!deletedBook) {
+      return res.status(404).json({ message: 'Book not found.' });
+    }
+    res.status(200).json({ message: 'Book deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 }; 
