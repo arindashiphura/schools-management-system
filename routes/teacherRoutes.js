@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { createTeacher, getAllTeachers } = require('../controllers/teacherController');
+const { createTeacher, getAllTeachers, updateTeacher, deleteTeacher } = require('../controllers/teacherController');
 
 // Multer setup
 const storage = multer.diskStorage({
@@ -17,5 +17,7 @@ const upload = multer({ storage });
 
 router.post('/', upload.single('photo'), createTeacher);
 router.get('/', getAllTeachers);
+router.put('/:id', upload.single('photo'), updateTeacher);
+router.delete('/:id', deleteTeacher);
 
 module.exports = router; 

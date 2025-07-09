@@ -108,4 +108,50 @@ exports.getAllStudents = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error. Could not fetch students.', error: error.message });
   }
+};
+
+// Update student by ID
+exports.updateStudent = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const updateData = { ...req.body };
+
+    // If a new student photo is uploaded
+    if (req.files && req.files.studentPhoto && req.files.studentPhoto[0]) {
+      updateData.studentPhoto = `/uploads/${req.files.studentPhoto[0].filename}`;
+    }
+    // If a new parents photo is uploaded
+    if (req.files && req.files.parentsPhoto && req.files.parentsPhoto[0]) {
+      updateData.parentsPhoto = `/uploads/${req.files.parentsPhoto[0].filename}`;
+    }
+
+    // Remove undefined or empty string fields (optional, for cleaner updates)
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined || updateData[key] === '') {
+        delete updateData[key];
+      }
+    });
+
+    const updatedStudent = await Student.findByIdAndUpdate(studentId, updateData, { new: true });
+    if (!updatedStudent) {
+      return res.status(404).json({ success: false, message: 'Student not found.' });
+    }
+    res.status(200).json({ success: true, message: 'Student updated successfully!', student: updatedStudent });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error. Could not update student.', error: error.message });
+  }
+};
+
+// Delete student by ID
+exports.deleteStudent = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const deletedStudent = await Student.findByIdAndDelete(studentId);
+    if (!deletedStudent) {
+      return res.status(404).json({ success: false, message: 'Student not found.' });
+    }
+    res.status(200).json({ success: true, message: 'Student deleted successfully!' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error. Could not delete student.', error: error.message });
+  }
 }; 

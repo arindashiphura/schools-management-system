@@ -1,5 +1,5 @@
 const express = require('express');
-const { createStudent, getAllStudents } = require('../controllers/studentController');
+const { createStudent, getAllStudents, updateStudent, deleteStudent } = require('../controllers/studentController');
 const upload = require('../middleware/uploadMiddleware');
 const router = express.Router();
 
@@ -10,7 +10,13 @@ router.post('/add', upload.fields([
 
 router.get('/all', getAllStudents);
 
-// You can add more routes here later for getting all students, updating, deleting, etc.
-// router.get('/all', studentController.getAllStudents);
+// Update student by ID
+router.put('/:id', upload.fields([
+  { name: 'studentPhoto', maxCount: 1 },
+  { name: 'parentsPhoto', maxCount: 1 }
+]), updateStudent);
+
+// Delete student by ID
+router.delete('/:id', deleteStudent);
 
 module.exports = router; 
