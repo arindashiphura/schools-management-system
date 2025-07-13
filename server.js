@@ -12,6 +12,10 @@ const teacherRoutes = require('./routes/teacherRoutes');
 const bookRoutes = require('./routes/bookRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const classRoutineRoutes = require('./routes/classRoutineRoutes');
+const examScheduleRoutes = require('./routes/examScheduleRoutes');
+const examGradeRoutes = require('./routes/examGradeRoutes');
 
 
 const app = express();
@@ -37,6 +41,10 @@ app.use("/api/v1/teachers", teacherRoutes);
 app.use("/api/v1/books", bookRoutes);
 app.use("/api/v1/expenses", expenseRoutes);
 app.use("/api/v1/subjects", subjectRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
+app.use("/api/v1/class-routine", classRoutineRoutes);
+app.use("/api/v1/exam-schedule", examScheduleRoutes);
+app.use("/api/v1/exam-grades", examGradeRoutes);
 
 
 // Serve upload folder

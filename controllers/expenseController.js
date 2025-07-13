@@ -32,4 +32,39 @@ exports.getAllExpenses = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
+};
+
+// Update an expense by ID
+exports.updateExpense = async (req, res) => {
+  try {
+    const expenseId = req.params.id;
+    const updateData = { ...req.body };
+    // Remove undefined or empty string fields
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined || updateData[key] === '') {
+        delete updateData[key];
+      }
+    });
+    const updatedExpense = await Expense.findByIdAndUpdate(expenseId, updateData, { new: true });
+    if (!updatedExpense) {
+      return res.status(404).json({ message: 'Expense not found.' });
+    }
+    res.status(200).json({ message: 'Expense updated successfully', expense: updatedExpense });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Delete an expense by ID
+exports.deleteExpense = async (req, res) => {
+  try {
+    const expenseId = req.params.id;
+    const deletedExpense = await Expense.findByIdAndDelete(expenseId);
+    if (!deletedExpense) {
+      return res.status(404).json({ message: 'Expense not found.' });
+    }
+    res.status(200).json({ message: 'Expense deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 }; 
