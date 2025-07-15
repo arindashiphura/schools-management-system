@@ -154,4 +154,41 @@ exports.deleteStudent = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error. Could not delete student.', error: error.message });
   }
+};
+
+// Search students by name, id, class, section
+exports.searchStudents = async (req, res) => {
+  try {
+    const { query, name, id, class: studentClass, section } = req.query;
+    const search = {};
+    if (query) {
+      // Flexible search: match any field
+      search.$or = [
+        { firstName: { $regex: query, $options: 'i' } },
+        { lastName: { $regex: query, $options: 'i' } },
+        { rollNo: { $regex: query, $options: 'i' } },
+        { class: { $regex: query, $options: 'i' } },
+        { section: { $regex: query, $options: 'i' } }
+      ];
+    }
+    if (name) {
+      search.$or = [
+        { firstName: { $regex: name, $options: 'i' } },
+        { lastName: { $regex: name, $options: 'i' } }
+      ];
+    }
+    if (id) {
+      search.rollNo = { $regex: id, $options: 'i' };
+    }
+    if (studentClass) {
+      search.class = { $regex: studentClass, $options: 'i' };
+    }
+    if (section) {
+      search.section = { $regex: section, $options: 'i' };
+    }
+    const students = await Student.find(search).limit(20);
+    res.status(200).json({ success: true, students });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error. Could not search students.', error: error.message });
+  }
 }; 

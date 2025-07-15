@@ -1,5 +1,5 @@
 const express = require('express');
-const { createStudent, getAllStudents, updateStudent, deleteStudent } = require('../controllers/studentController');
+const { createStudent, getAllStudents, updateStudent, deleteStudent, searchStudents } = require('../controllers/studentController');
 const upload = require('../middleware/uploadMiddleware');
 const router = express.Router();
 
@@ -18,5 +18,7 @@ router.put('/:id', upload.fields([
 
 // Delete student by ID
 router.delete('/:id', deleteStudent);
+
+router.get('/search', searchStudents);
 
 module.exports = router; 
