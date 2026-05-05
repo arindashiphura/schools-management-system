@@ -3,20 +3,17 @@ const Expense = require('../models/Expense');
 // Create a new expense
 exports.createExpense = async (req, res) => {
   try {
-    const { id, expenseType, name, amount, status, phone, email, date } = req.body;
-    if (!id || !expenseType || !name || !amount || !status || !phone || !email || !date) {
-      return res.status(400).json({ message: 'All fields are required.' });
+    const { expenseType, category, title, amount, date } = req.body;
+
+    if (!expenseType || !category || !title || !amount || !date) {
+      return res.status(400).json({ message: 'Expense type, category, title, amount and date are required.' });
     }
-    const newExpense = new Expense({
-      id,
-      expenseType,
-      name,
-      amount,
-      status,
-      phone,
-      email,
-      date,
-    });
+
+    // Auto-generate sequential expense ID
+    const count = await Expense.countDocuments();
+    const expenseId = `EXP-${String(count + 1).padStart(4, '0')}`;
+
+    const newExpense = new Expense({ ...req.body, expenseId, amount: Number(amount) });
     await newExpense.save();
     res.status(201).json({ message: 'Expense created successfully', expense: newExpense });
   } catch (error) {

@@ -90,3 +90,31 @@ exports.deleteTeacher = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 }; 
+
+// Get teachers who have a User account but incomplete profile
+// (registered but not yet fully set up by admin)
+exports.getRegisteredTeacherUsers = async (req, res) => {
+  try {
+    const User = require('../models/User');
+    // Get all users with role teacher
+    const users = await User.find({ role: 'teacher' }).select('_id fullName email createdAt');
+    // For each, check if their teacher record is complete (has subject/class)
+    const teachers = await Teacher.find({ email: { $in: users.map(u => u.email) } });
+    const teacherEmailMap = {};
+    teachers.forEach(t => { teacherEmailMap[t.email] = t; });
+
+    const result = users.map(u => ({
+      userId:      u._id,
+      fullName:    u.fullName,
+      email:       u.email,
+      createdAt:   u.createdAt,
+      teacherId:   teacherEmailMap[u.email]?._id,
+      isComplete:  !!(teacherEmailMap[u.email]?.subject && teacherEmailMap[u.email]?.class),
+      teacherRecord: teacherEmailMap[u.email] || null,
+    }));
+
+    res.status(200).json({ success: true, users: result });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

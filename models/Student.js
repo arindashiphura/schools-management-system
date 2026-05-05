@@ -96,6 +96,16 @@ const StudentSchema = new mongoose.Schema({
     uniform:   { type: Number, default: 0 },
     other:     { type: Number, default: 0 },
   },
+
+  // ── Subject Combination ────────────────────────────────────────────────────
+  subjects: [
+    {
+      subjectId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Subject' },
+      subjectName: { type: String },
+      subjectCode: { type: String },
+      subjectType: { type: String }, // Compulsory / Elective / Subsidiary
+    }
+  ],
 }, {
   timestamps: true // Adds createdAt and updatedAt timestamps
 });

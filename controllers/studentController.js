@@ -268,3 +268,22 @@ exports.updateStudentFee = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
+
+// Assign subjects to a student
+exports.assignSubjects = async (req, res) => {
+  try {
+    const { subjects } = req.body; // array of { subjectId, subjectName, subjectCode, subjectType }
+    if (!Array.isArray(subjects)) {
+      return res.status(400).json({ message: 'subjects must be an array' });
+    }
+    const student = await Student.findByIdAndUpdate(
+      req.params.id,
+      { subjects },
+      { new: true }
+    );
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+    res.status(200).json({ success: true, message: 'Subjects assigned successfully', student });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};

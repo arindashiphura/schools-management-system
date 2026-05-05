@@ -1,13 +1,21 @@
 const Class = require('../models/Class');
+const Teacher = require('../models/Teacher');
 
 // Create a new class
 exports.createClass = async (req, res) => {
   try {
-    const { classId, teacherName, gender, subject, class: className, section, date, timings, photo } = req.body;
-    if (!classId || !teacherName) {
-      return res.status(400).json({ message: 'classId and teacherName are required.' });
+    const { className, stream, level, teacherName, teacherId, subjects, day, timings, date, room, gender, photo } = req.body;
+    if (!className || !stream) {
+      return res.status(400).json({ message: 'className and stream are required.' });
     }
-    const newClass = new Class({ classId, teacherName, gender, subject, class: className, section, date, timings, photo });
+    // Auto-generate classId e.g. S1A, S2B
+    const classId = `${className}${stream}`.toUpperCase();
+    // Check if already exists
+    const existing = await Class.findOne({ classId });
+    if (existing) {
+      return res.status(400).json({ message: `Class ${classId} already exists.` });
+    }
+    const newClass = new Class({ classId, className, stream, level, teacherName, teacherId, subjects, day, timings, date, room, gender, photo });
     await newClass.save();
     res.status(201).json({ message: 'Class created successfully', class: newClass });
   } catch (error) {
