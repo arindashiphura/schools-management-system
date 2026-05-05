@@ -15,9 +15,15 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.post('/', upload.single('photo'), createTeacher);
+// Accept both profile photo and passport photo
+const uploadFields = upload.fields([
+  { name: 'photo', maxCount: 1 },
+  { name: 'passportPhoto', maxCount: 1 },
+]);
+
+router.post('/', uploadFields, createTeacher);
 router.get('/', getAllTeachers);
-router.put('/:id', upload.single('photo'), updateTeacher);
+router.put('/:id', uploadFields, updateTeacher);
 router.delete('/:id', deleteTeacher);
 
 module.exports = router; 

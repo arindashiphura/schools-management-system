@@ -12,6 +12,10 @@ const teacherSchema = new mongoose.Schema({
   mobile: { type: String },
   email: { type: String },
   photo: { type: String },
+  // Identity documents
+  nin: { type: String, trim: true },           // National Identification Number
+  passportPhoto: { type: String },             // path to uploaded passport photo
+  passportNumber: { type: String, trim: true },// optional passport number
 }, { timestamps: true });
 
 module.exports = mongoose.model('Teacher', teacherSchema); 

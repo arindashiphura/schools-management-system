@@ -1,11 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { createNotice, getAllNotices } = require('../controllers/noticeController');
+const {
+  createNotice,
+  getAllNotices,
+  getNoticesByRole,
+  updateNotice,
+  deleteNotice,
+} = require('../controllers/noticeController');
 
-// Create a new notice
 router.post('/', createNotice);
-
-// Get all notices
 router.get('/', getAllNotices);
+router.get('/by-role', getNoticesByRole);
+router.put('/:id', updateNotice);
+router.delete('/:id', deleteNotice);
 
-module.exports = router; 
+module.exports = router;

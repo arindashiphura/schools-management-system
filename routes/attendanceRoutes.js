@@ -4,6 +4,7 @@ const attendanceController = require('../controllers/attendanceController');
 
 // GET attendance for class/section/month/year
 router.get('/', attendanceController.getAttendance);
+router.get('/', attendanceController.getAttendance);
 
 // POST mark attendance
 router.post('/', attendanceController.markAttendance);

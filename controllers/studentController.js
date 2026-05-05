@@ -192,3 +192,79 @@ exports.searchStudents = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error. Could not search students.', error: error.message });
   }
 }; 
+
+// Get student fee balance
+exports.getStudentFeeBalance = async (req, res) => {
+  try {
+    const Payment = require('../models/Payment');
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+
+    // All payments for this student
+    const payments = await Payment.find({ studentId: req.params.id }).sort({ date: -1 });
+
+    // Total paid per fee type
+    const paidByType = {};
+    let totalPaid = 0;
+    payments.forEach(p => {
+      const type = (p.feeType || 'other').toLowerCase();
+      paidByType[type] = (paidByType[type] || 0) + (p.amount || 0);
+      totalPaid += (p.amount || 0);
+    });
+
+    const breakdown = student.feeBreakdown || {};
+    const totalFee = student.totalFee || 0;
+    const balance = totalFee - totalPaid;
+
+    // Per-type balance
+    const feeTypes = ['tuition', 'exam', 'library', 'sports', 'transport', 'uniform', 'other'];
+    const typeBalances = feeTypes.map(type => ({
+      type,
+      required: breakdown[type] || 0,
+      paid: paidByType[type] || 0,
+      balance: (breakdown[type] || 0) - (paidByType[type] || 0),
+    }));
+
+    res.status(200).json({
+      success: true,
+      student: {
+        _id: student._id,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        rollNo: student.rollNo,
+        admissionNo: student.admissionNo,
+        class: student.class,
+        section: student.section,
+        studentPhoto: student.studentPhoto,
+        totalFee,
+        feeBreakdown: breakdown,
+      },
+      summary: {
+        totalFee,
+        totalPaid,
+        balance,
+        status: balance <= 0 ? 'Cleared' : totalPaid === 0 ? 'Unpaid' : 'Partial',
+      },
+      typeBalances,
+      payments,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
+// Update student fee structure
+exports.updateStudentFee = async (req, res) => {
+  try {
+    const { totalFee, feeBreakdown } = req.body;
+    const student = await Student.findByIdAndUpdate(
+      req.params.id,
+      { totalFee, feeBreakdown },
+      { new: true }
+    );
+    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+    res.status(200).json({ success: true, message: 'Fee structure updated', student });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};

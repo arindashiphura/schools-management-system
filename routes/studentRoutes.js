@@ -1,5 +1,5 @@
 const express = require('express');
-const { createStudent, getAllStudents, updateStudent, deleteStudent, searchStudents } = require('../controllers/studentController');
+const { createStudent, getAllStudents, updateStudent, deleteStudent, searchStudents, getStudentFeeBalance, updateStudentFee } = require('../controllers/studentController');
 const upload = require('../middleware/uploadMiddleware');
 const router = express.Router();
 
@@ -9,6 +9,9 @@ router.post('/add', upload.fields([
 ]), createStudent);
 
 router.get('/all', getAllStudents);
+router.get('/search', searchStudents);
+router.get('/:id/fee-balance', getStudentFeeBalance);
+router.put('/:id/fee-structure', updateStudentFee);
 
 // Update student by ID
 router.put('/:id', upload.fields([
@@ -18,7 +21,5 @@ router.put('/:id', upload.fields([
 
 // Delete student by ID
 router.delete('/:id', deleteStudent);
-
-router.get('/search', searchStudents);
 
 module.exports = router; 

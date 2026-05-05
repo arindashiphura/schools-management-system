@@ -79,8 +79,23 @@ const StudentSchema = new mongoose.Schema({
     trim: true
   },
   parentsPhoto: {
-    type: String, // Store path to the uploaded photo
-  }
+    type: String,
+  },
+
+  // ── Fee Structure ──────────────────────────────────────────────────────────
+  totalFee: {
+    type: Number,
+    default: 0,
+  },
+  feeBreakdown: {
+    tuition:   { type: Number, default: 0 },
+    exam:      { type: Number, default: 0 },
+    library:   { type: Number, default: 0 },
+    sports:    { type: Number, default: 0 },
+    transport: { type: Number, default: 0 },
+    uniform:   { type: Number, default: 0 },
+    other:     { type: Number, default: 0 },
+  },
 }, {
   timestamps: true // Adds createdAt and updatedAt timestamps
 });

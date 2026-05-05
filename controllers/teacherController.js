@@ -46,15 +46,27 @@ exports.updateTeacher = async (req, res) => {
   try {
     const teacherId = req.params.id;
     const updateData = { ...req.body };
-    if (req.file) {
+
+    // Handle profile photo upload
+    if (req.files && req.files.photo && req.files.photo[0]) {
+      updateData.photo = `/uploads/${req.files.photo[0].filename}`;
+    } else if (req.file) {
+      // fallback for single upload
       updateData.photo = `/uploads/${req.file.filename}`;
     }
+
+    // Handle passport photo upload
+    if (req.files && req.files.passportPhoto && req.files.passportPhoto[0]) {
+      updateData.passportPhoto = `/uploads/${req.files.passportPhoto[0].filename}`;
+    }
+
     // Remove undefined or empty string fields
     Object.keys(updateData).forEach(key => {
       if (updateData[key] === undefined || updateData[key] === '') {
         delete updateData[key];
       }
     });
+
     const updatedTeacher = await Teacher.findByIdAndUpdate(teacherId, updateData, { new: true });
     if (!updatedTeacher) {
       return res.status(404).json({ message: 'Teacher not found.' });
